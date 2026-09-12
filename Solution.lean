@@ -1,10 +1,14 @@
+/-
+Copyright (c) 2026 Geo. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Geo
+-/
 import MyProject.HardyLittlewood
 
 /-!
-# Bridge: connecting the RNS-sieve development to the Challenge vocabulary
+# Solution: connecting the RNS-sieve development to the Challenge vocabulary
 
-Restates `Challenge.lean`'s vocabulary over `Finset ℤ`, and fills its two
-genuine gaps — `hardyLittlewoodConstant` and `hardyLittlewoodConstant_pos` —
+Closes Challenge.lean's sole remaining hole, `hardyLittlewoodConstant_pos`,
 by transporting the fully-proved `RNS.*` results from
 `MyProject/HardyLittlewood.lean` (stated over `Finset Nat`).
 -/
@@ -18,6 +22,12 @@ def omega (H : Constellation) (p : ℕ) : ℕ :=
 
 def IsAdmissible (H : Constellation) : Prop :=
   ∀ p : ℕ, p.Prime → omega H p < p
+
+noncomputable def singularSeriesTerm (H : Constellation) (k : ℕ) (p : ℕ) : ℝ :=
+  (1 - (omega H p : ℝ) / p) / (1 - 1 / (p : ℝ)) ^ k
+
+noncomputable def hardyLittlewoodConstant (H : Constellation) : ℝ :=
+  ∏' p : Nat.Primes, singularSeriesTerm H H.card p
 
 lemma omega_shift (H : Constellation) (c : ℤ) (p : ℕ) :
     omega (H.image (· + c)) p = omega H p := by
@@ -113,16 +123,34 @@ lemma natConstellation_w_eq_omega (H : Constellation) (hne : H.Nonempty) (p : �
       rwa [ZMod.val_cast_of_lt hax, ZMod.val_cast_of_lt hby] at hv
     exact (Finset.card_image_of_injOn hinj).symm
 
-/-! ### Filling Challenge's two gaps -/
+lemma singularSeriesTerm_eq_factor (H : Constellation) (hne : H.Nonempty) (p : ℕ)
+    (hp : p.Prime) :
+    singularSeriesTerm H H.card p = RNS.singularSeriesFactor (natConstellation H hne) p := by
+  unfold singularSeriesTerm RNS.singularSeriesFactor
+  rw [natConstellation_w_eq_omega H hne p, natConstellation_card H hne]
+  have hpR_ne : (p : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr hp.pos.ne'
+  have hbase : (1 - 1 / (p : ℝ)) = ((p : ℝ) - 1) / p := by field_simp
+  rw [hbase, div_pow]
+  obtain ⟨m, hm⟩ : ∃ m, H.card = m + 1 := by
+    have := Finset.card_pos.mpr hne
+    exact ⟨H.card - 1, by omega⟩
+  rw [hm, Nat.add_sub_cancel]
+  have hp2 : (2 : ℝ) ≤ (p : ℝ) := by exact_mod_cast hp.two_le
+  have hpm1_ne : (p : ℝ) - 1 ≠ 0 := by linarith
+  have hppow_ne : (p : ℝ) ^ (m + 1) ≠ 0 := pow_ne_zero _ hpR_ne
+  have hpm1pow_ne : ((p : ℝ) - 1) ^ (m + 1) ≠ 0 := pow_ne_zero _ hpm1_ne
+  field_simp
+  ring
 
-noncomputable def hardyLittlewoodConstant (H : Constellation) : ℝ :=
-  if hne : H.Nonempty then RNS.hardyLittlewoodConstant (natConstellation H hne) else 1
+lemma hardyLittlewoodConstant_eq (H : Constellation) (hne : H.Nonempty) :
+    hardyLittlewoodConstant H = RNS.hardyLittlewoodConstant (natConstellation H hne) := by
+  unfold hardyLittlewoodConstant RNS.hardyLittlewoodConstant
+  exact tprod_congr (fun p => singularSeriesTerm_eq_factor H hne (p : ℕ) p.2)
 
 theorem hardyLittlewoodConstant_pos (H : Constellation) (hA : IsAdmissible H)
     (hk : 1 ≤ H.card) : 0 < hardyLittlewoodConstant H := by
   have hne : H.Nonempty := Finset.card_pos.mp (by omega)
-  unfold hardyLittlewoodConstant
-  rw [dif_pos hne]
+  rw [hardyLittlewoodConstant_eq H hne]
   apply RNS.hardyLittlewoodConstantPos
   · intro p hp
     rw [natConstellation_w_eq_omega H hne p]

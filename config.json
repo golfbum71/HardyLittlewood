@@ -1,7 +1,6 @@
 ﻿{
   "challenge_module": "Challenge",
-  "solution_module": "Bridge",
-  "definition_names": ["hardyLittlewoodConstant"],
+  "solution_module": "Solution",
   "theorem_names": ["hardyLittlewoodConstant_pos"],
   "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
   "enable_nanoda": false

@@ -39,6 +39,12 @@ noncomputable def singularSeriesTerm (H : Constellation) (k : ℕ) (p : ℕ) : �
 noncomputable def hardyLittlewoodConstant (H : Constellation) : ℝ :=
   ∏' p : Nat.Primes, singularSeriesTerm H H.card p
 
+/-- **The Hardy–Littlewood constant is positive for admissible constellations.**
+This is the genuinely hard analytic content the Solution must supply — a
+convergence/positivity argument for the singular series product. -/
+theorem hardyLittlewoodConstant_pos (H : Constellation) (hA : IsAdmissible H)
+    (hk : 1 ≤ H.card) : 0 < hardyLittlewoodConstant H := sorry
+
 noncomputable def asymptoticBound (k : ℕ) (x : ℝ) : ℝ :=
   x / (Real.log x) ^ k
 
