@@ -66,15 +66,17 @@ beyond it.
 All of `MyProject/HardyLittlewood.lean`'s content is namespaced under `RNS`.
 
 ## Repository Structure
+```
 my_project/
 ├── lakefile.toml
 ├── config.json
-├── MyProject.lean # imports MyProject.Basic, MyProject.HardyLittlewood
+├── MyProject.lean          # imports MyProject.Basic, MyProject.HardyLittlewood
 ├── MyProject/
-│ ├── Basic.lean
-│ └── HardyLittlewood.lean # Parts A–D, namespaced under RNS
-├── Challenge.lean # independently-verifiable challenge statement
-└── Bridge.lean # fills Challenge's gaps from RNS's proven results
+│   ├── Basic.lean
+│   └── HardyLittlewood.lean  # Parts A–D, namespaced under RNS
+├── Challenge.lean          # independently-verifiable challenge statement
+└── Bridge.lean             # fills Challenge's gaps from RNS's proven results
+```
 
 
 Four separate Lake library targets build from this layout:
