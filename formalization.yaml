@@ -1,0 +1,99 @@
+version: "v0.3"
+
+project:
+  name: "Hardy–Littlewood Prime k-Tuple Conjecture — RNS Sieve Formalization"
+  authors: ["Geoffrey Fischer"]
+  license: "Apache-2.0"
+
+sources:
+  - title: "Partitio Numerorum III: On the Expression of a Number as a Sum of Primes"
+    authors: ["G. H. Hardy", "J. E. Littlewood"]
+    id: ""
+    type: "paper"
+    license: ""
+    author_contacted: "n/a"
+    prior_work: ""  
+
+status:
+  scope: "Finite CRT/wheel-sieve machinery, singular series convergence and 
+  positivity, and a general theorem that the quantitative Hardy–Littlewood 
+  conjecture implies infinitely many prime k-tuples for any admissible 
+  constellation; the conjecture itself is stated but deliberately left open."
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Quot.sound", "Classical.choice"]
+  root_path: ""
+  main_results:
+    - declaration: "hardyLittlewoodConstant_pos"
+      file: "Solution.lean"
+      sorry_count: 0 # excludes Challenge.lean's intentional sorry
+      axioms: ["propext", "Quot.sound", "Classical.choice"]
+      comparator_config: "config.json"
+    - declaration: "quantitativeHardyLittlewood_implies_infinite"
+      file: "Challenge.lean"
+      sorry_count: 0
+      axioms: ["propext", "Quot.sound", "Classical.choice"]
+      comparator_config: ""
+  literature_dependencies:
+    - statement: "QuantitativeHardyLittlewood (the k-tuple conjecture itself)"
+      source: "Partitio Numerorum III"
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["claude-sonnet-5"]
+      framework: "Claude.ai chat interface"
+      tool_setup: >
+        Interactive loop: Claude drafted each lemma/theorem with a full proof
+        attempt and named its own highest-risk step in advance; I
+        pasted the code into live.lean-lang.org (early steps) or ran
+        `lake build` in a local Windows PowerShell project (later steps) and
+        reported the exact compiler/linter output back verbatim; Claude
+        diagnosed the specific failure and issued a single corrected
+        declaration, repeated until each piece was accepted and
+        `#print axioms` confirmed no `sorryAx`. Earlier sessions used
+        claude-in-chrome browser automation to read the Monaco editor's 
+        error panel via screenshots, per project notes.
+      cost:
+        wall_time: I have no way to know actual elapsed time
+        spend_usd: less than 1 month of Claude Pro
+        hardware: Windows PC (local), live.lean-lang.org (browser)
+      prompting_notes: >
+        The RNS wheel-sieve framework, the mod-6 residue approach, the choice
+        to bridge Challenge's Finset ℤ/ZMod vocabulary to a Finset ℕ
+        representative via a translation-invariance argument, and the overall
+        project structure and workflow discipline (one-step verification,
+        no-sorry completion gate) originated with me. Claude drafted
+        the Lean code, proof attempts, and specific tactic-level fixes at each
+        step, under my direction and review.
+  spend_usd: No idea ... lost track of time.  Less than 1 month on Claude
+  notes: >
+    Created over several iterations ... main ideas fleshed out in a large file
+    and then created challenge and solution files for this formalization.
+
+fidelity:
+  divergences: singularSeriesTerm's (1 - ω/p)/(1 - 1/p)^k form vs. RNS's 
+    p^(k-1)(p-w)/(p-1)^k form are proved equal, not definitionally identical
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: ""
+
+alignment:
+  namespace: "RNS"
+  statements:
+    - source: "Singular series 𝔖(D_k) = ∏_p (1-1/p)^{-k}(1 - ν(p)/p)"
+      lean: "hardyLittlewoodConstant"
+      module: "Challenge.lean"
+      status: "proved"
+    - source: "Hardy–Littlewood k-tuple conjecture (quantitative form)"
+      lean: "QuantitativeHardyLittlewood"
+      module: "Challenge.lean"
+      status: "not-formalized"  # stated as Prop, deliberately unproved — this is correct, not a gap
+    - source: "Conjecture implies infinitude of prime k-tuples"
+      lean: "quantitativeHardyLittlewood_implies_infinite"
+      module: "Challenge.lean"
+      status: "proved"
+
+acknowledgements: ""
