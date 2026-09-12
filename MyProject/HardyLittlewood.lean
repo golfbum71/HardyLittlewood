@@ -17,7 +17,7 @@ the statement of the Hardy–Littlewood k-tuple conjecture.
 Primes greater than 3 lie in the residue classes 1 or 5 mod 6.
 `isCandidate` encodes this filter.
 -/
-
+namespace RNS
 def isCandidate (n : Nat) : Bool :=
   (n % 6 == 1) || (n % 6 == 5)
 
@@ -711,3 +711,5 @@ theorem twinPrimeConjectureImpliesInfiniteTwinPrimes
         ≤ (actualTupleCount ({0, 2} : Finset Nat) B : ℝ) := hBcount
       _ ≤ (hfin.toFinset.card : ℝ) := by exact_mod_cast hbound
   linarith
+end RNS
+

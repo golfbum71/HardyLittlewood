@@ -23,3 +23,6 @@ globs = ["MyProject.+"]
 
 [[lean_lib]]
 name = "Challenge"
+
+[[lean_lib]]
+name = "Bridge"
